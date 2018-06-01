@@ -7,16 +7,22 @@ use GuzzleHttp\ClientInterface;
 
 class GuzzleServiceProviderTest extends TestCase
 {
+    public function testProvides()
+    {
+        $provider = $this->app->getProvider(GuzzleServiceProvider::class);
+
+        $this->assertContains(ClientInterface::class, $provider->provides());
+        $this->assertContains(GuzzleClientRegistry::class, $provider->provides());
+    }
+
     public function testMakeDefaultClient()
     {
-        /*
+        $config = require($this->getFixture('config.php'));
+
         $this->app->make('config')->set(
-            'guzzle.clients.default',
-            [
-                'base_uri' => 'http://127.0.0.1',
-            ]
+            'guzzle',
+            $config
         );
-         */
 
         $client = $this->app->make(ClientInterface::class);
 
