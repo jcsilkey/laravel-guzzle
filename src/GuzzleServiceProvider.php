@@ -26,7 +26,17 @@ class GuzzleServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // boot...
+        $this->publishes([
+            $this->getConfigPath() => config_path('guzzle.php'),
+        ], 'config');
+    }
+
+    /**
+     * @return string
+     */
+    protected function getConfigPath()
+    {
+        return dirname(__DIR__) . '/config/guzzle.php';
     }
 
     /**
