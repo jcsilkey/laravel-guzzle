@@ -57,7 +57,7 @@ class GuzzleServiceProvider extends ServiceProvider
 
             $clients = $config->get('guzzle.clients', []);
 
-            $defaultConfiguration = $config->get('guzzle.defaults', []);
+            $defaultConfiguration = $config->get('guzzle.global', []);
 
             return new GuzzleClientRegistry($clients, $defaultConfiguration, $defaultClientName);
         });

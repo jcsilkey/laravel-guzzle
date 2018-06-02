@@ -2,7 +2,7 @@
 
 return [
     'default' => 'simple',
-    'defaults' => [],
+    'global' => [],
     'clients' => [
         'simple' => [],
         'handler_test' => [

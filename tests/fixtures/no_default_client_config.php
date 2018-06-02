@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'defaults' => [],
+    'global' => [],
     'clients' => [
         'simple' => [],
         'handler_test' => [

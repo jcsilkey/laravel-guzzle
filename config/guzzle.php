@@ -3,7 +3,7 @@
 return [
     'default' => env('GUZZLE_DEFAULT_CLIENT', null),
 
-    'defaults' => [],
+    'global' => [],
     /**
      * Define configuration for clients
      */

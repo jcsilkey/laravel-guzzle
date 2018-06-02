@@ -12,7 +12,7 @@ class GuzzleRegistryTest extends TestCase
     {
         $default = !isset($config['default']) ? null : $config['default'];
 
-        return new GuzzleClientRegistry($config['clients'], $config['defaults'], $default);
+        return new GuzzleClientRegistry($config['clients'], $config['global'], $default);
     }
 
     public function testGetDefaultClient()

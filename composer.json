@@ -27,5 +27,12 @@
     "psr-4": {
       "JCS\\LaravelGuzzle\\": "tests/"
     }
+  },
+  "extras": {
+    "laravel": {
+      "providers": [
+        "JCS\\LaravelGuzzle\\GuzzleServiceProvider"
+      ]
+    }
   }
 }
