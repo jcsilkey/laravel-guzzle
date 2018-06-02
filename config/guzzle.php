@@ -14,7 +14,7 @@ return [
              */
             //'handler' => 'GuzzleHttp\Handler\CurlHandler',
             /**
-             * Define a cusomt middleware stack
+             * Define a custom middleware stack
              *
              * callable: the middleware function to call
              * name: the name to register the middleware as
