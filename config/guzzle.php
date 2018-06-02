@@ -1,8 +1,9 @@
 <?php
 
 return [
-    'default' => env('GUZZLE_DEFAULT_CLIENT', 'default'),
+    'default' => env('GUZZLE_DEFAULT_CLIENT', null),
 
+    'defaults' => [],
     /**
      * Define configuration for clients
      */

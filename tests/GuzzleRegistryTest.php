@@ -8,11 +8,18 @@ use GuzzleHttp\ClientInterface;
 
 class GuzzleRegistryTest extends TestCase
 {
+    public function makeClientRegistry(array $config)
+    {
+        $default = !isset($config['default']) ? null : $config['default'];
+
+        return new GuzzleClientRegistry($config['clients'], $config['defaults'], $default);
+    }
+
     public function testGetDefaultClient()
     {
-        $config = require($this->getFixture('config.php'));
+        $config = require($this->getFixture('no_default_client_config.php'));
 
-        $registry = new GuzzleClientRegistry($config['clients'], $config['default']);
+        $registry = $this->makeClientRegistry($config);
 
         $client = $registry->getClient();
 
@@ -27,7 +34,7 @@ class GuzzleRegistryTest extends TestCase
 
         $config = require($this->getFixture('config.php'));
 
-        $registry = new GuzzleClientRegistry($config['clients'], $config['default']);
+        $registry = $this->makeClientRegistry($config);
 
         $client = $registry->getClient('simple');
 
@@ -49,7 +56,7 @@ class GuzzleRegistryTest extends TestCase
 
         $config = require($this->getFixture('config.php'));
 
-        $registry = new GuzzleClientRegistry($config['clients'], $config['default']);
+        $registry = $this->makeClientRegistry($config);
 
         $client = $registry->getClient($clientName);
     }
@@ -58,7 +65,7 @@ class GuzzleRegistryTest extends TestCase
     {
         $config = require($this->getFixture('config.php'));
 
-        $registry = new GuzzleClientRegistry($config['clients'], $config['default']);
+        $registry = $this->makeClientRegistry($config);
 
         $client = $registry->getClient('simple');
 
@@ -71,7 +78,7 @@ class GuzzleRegistryTest extends TestCase
     {
         $config = require($this->getFixture('config.php'));
 
-        $registry = new GuzzleClientRegistry($config['clients'], $config['default']);
+        $registry = $this->makeClientRegistry($config);
 
         $client = $registry->getClient('handler_test');
 
@@ -82,7 +89,7 @@ class GuzzleRegistryTest extends TestCase
     {
         $config = require($this->getFixture('config.php'));
 
-        $registry = new GuzzleClientRegistry($config['clients'], $config['default']);
+        $registry = $this->makeClientRegistry($config);
 
         $client = $registry->getClient('middleware_test');
 
@@ -93,7 +100,7 @@ class GuzzleRegistryTest extends TestCase
     {
         $config = require($this->getFixture('config.php'));
 
-        $registry = new GuzzleClientRegistry($config['clients'], $config['default']);
+        $registry = $this->makeClientRegistry($config);
 
         $client = $registry->getClient('handler_and_middleware_test');
 

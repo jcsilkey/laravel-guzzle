@@ -43,11 +43,13 @@ class GuzzleServiceProvider extends ServiceProvider
         $this->app->singleton(GuzzleClientRegistry::class, function($app) {
             $config = $app->make('config');
 
-            $default = $config->get('guzzle.default', 'default');
+            $defaultClientName = $config->get('guzzle.default', null);
 
             $clients = $config->get('guzzle.clients', []);
 
-            return new GuzzleClientRegistry($clients, $default);
+            $defaultConfiguration = $config->get('guzzle.defaults', []);
+
+            return new GuzzleClientRegistry($clients, $defaultConfiguration, $defaultClientName);
         });
 
         $this->app->bind(ClientInterface::class, function($app) {

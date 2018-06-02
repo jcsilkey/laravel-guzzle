@@ -17,23 +17,42 @@ class GuzzleClientRegistry
     protected $clients;
 
     /**
+     * Default configuration for all clients
+     *
+     * @var array
+     */
+    protected $defaultConfiguration;
+
+    /**
      * Name of the default client
      *
-     * @var string
+     * @var string|null
      */
-    protected $default;
+    protected $defaultClientName;
 
     /**
      * Constructor
      *
      * @param array $clientsConfiguration Configuration options for clients
-     * @param string $default The name of the default client
+     * @param array $defaultConfiguration Default configuration options for all clients
+     * @param string|null $defaultClientName The name of the default client
      */
-    public function __construct(array $clientsConfiguration, string $default)
-    {
+    public function __construct(
+        array $clientsConfiguration,
+        array $defaultConfiguration = [],
+        ?string $defaultClientName = null
+    ) {
         $this->clients = $clientsConfiguration;
 
-        $this->default = $default;
+        $this->defaultConfiguration = $defaultConfiguration;
+
+        if (is_null($defaultClientName)) {
+            $defaultClientName = 'default';
+
+            $this->clients[$defaultClientName] = [];
+        }
+
+        $this->defaultClientName = $defaultClientName;
     }
 
     /**
@@ -49,14 +68,14 @@ class GuzzleClientRegistry
      */
     public function getClient(?string $clientName = null) : ClientInterface
     {
-        $clientName = $clientName ?: $this->default;
+        $clientName = $clientName ?: $this->defaultClientName;
 
         if (!isset($this->clients[$clientName])) {
             throw new ClientNotRegisteredException($clientName);
         } elseif ($this->clients[$clientName] instanceof ClientInterface) {
             return $this->clients[$clientName];
         } else {
-            $config = $this->createHandlerStack($this->clients[$clientName]);
+            $config = $this->getConfigForClient($clientName);
 
             $client = new Client($config);
 
@@ -64,6 +83,13 @@ class GuzzleClientRegistry
         }
 
         return $client;
+    }
+
+    protected function getConfigForClient(string $clientName)
+    {
+        $config = array_merge($this->defaultConfiguration, $this->clients[$clientName]);
+
+        return $this->createHandlerStack($config);
     }
 
     /**
@@ -107,5 +133,4 @@ class GuzzleClientRegistry
     {
         return call_user_func($callable);
     }
-
 }

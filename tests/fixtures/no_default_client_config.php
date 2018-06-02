@@ -1,7 +1,6 @@
 <?php
 
 return [
-    'default' => 'simple',
     'defaults' => [],
     'clients' => [
         'simple' => [],
