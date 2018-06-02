@@ -72,54 +72,66 @@ class GuzzleClientRegistry
 
         if (!isset($this->clients[$clientName])) {
             throw new ClientNotRegisteredException($clientName);
-        } elseif ($this->clients[$clientName] instanceof ClientInterface) {
-            return $this->clients[$clientName];
-        } else {
-            $config = $this->getConfigForClient($clientName);
-
-            $client = new Client($config);
-
-            $this->clients[$clientName] = $client;
         }
 
-        return $client;
-    }
+        if (!($this->clients[$clientName] instanceof ClientInterface)) {
+            $this->clients[$clientName] = new Client($this->getConfigForClient($clientName));
+        }
 
-    protected function getConfigForClient(string $clientName)
-    {
-        $config = array_merge($this->defaultConfiguration, $this->clients[$clientName]);
-
-        return $this->createHandlerStack($config);
+        return $this->clients[$clientName];
     }
 
     /**
-     * Parses the client configuration and creates a handler stack to pass to the Client
+     * Get the configuration for a client.
      *
-     * @param array $clientConfig the client configuration array
+     * Does a shallow merge of the default configuration options and client configuration
      *
-     * @return array the client conguration array with the handler stack set
+     * @param string $clientName The name of the client to get configuration options for
+     *
+     * @return array The client configuration
      */
-    protected function createHandlerStack(array $clientConfig = [])
+    protected function getConfigForClient(string $clientName) : array
     {
-        if (isset($clientConfig['handler'])) {
-            $handler = new $clientConfig['handler'];
-        } else {
+        $config = array_merge($this->defaultConfiguration, $this->clients[$clientName]);
+
+        $handler = isset($config['handler']) ? $config['handler'] : null;
+
+        $middlewares = isset($config['middleware']) && is_array($config['middleware']) ?
+            $config['middleware'] :
+            null;
+
+        $config['handler'] = $this->createHandlerStack($handler, $middlewares);
+
+        return $config;
+    }
+
+    /**
+     * Create the client HandlerStack
+     *
+     * @param string|null $handler Class name of handler to use, or null to choose best fit
+     * @param array|null $middleware an array of middleware to use, or null to use the default set
+     *
+     * @return GuzzleHttp\HandlerStack the client handler stack
+     */
+    protected function createHandlerStack(?string $handler, ?array $middlewares) : HandlerStack
+    {
+        if (is_null($handler)) {
             $handler = \GuzzleHttp\choose_handler();
-        }
-
-        if (isset($clientConfig['middleware']) && is_array($clientConfig['middleware'])) {
-            $clientConfig['handler'] = new HandlerStack($handler);
-
-            foreach($clientConfig['middleware'] as $middleware) {
-                $clientConfig['handler']->push($this->makeMiddleware($middleware['callable']), $middleware['name']);
-            }
-
-            unset($clientConfig['middleware']);
         } else {
-            $clientConfig['handler'] = HandlerStack::create($handler);
+            $handler = new $handler;
         }
 
-        return $clientConfig;
+        if (is_null($middlewares)) {
+            return HandlerStack::create($handler);
+        }
+
+        $handlerStack = new HandlerStack($handler);
+
+        foreach($middlewares as $middleware) {
+            $handlerStack->push($this->makeMiddleware($middleware['callable']), $middleware['name']);
+        }
+
+        return $handlerStack;
     }
 
     /**
