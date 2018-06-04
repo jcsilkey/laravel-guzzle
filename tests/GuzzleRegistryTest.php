@@ -40,9 +40,6 @@ class GuzzleRegistryTest extends TestCase
 
         $clientConfig = $client->getConfig();
 
-        //print_r($clientConfig);
-        //echo PHP_EOL.(string)$clientConfig['handler'].PHP_EOL;
-
         $this->assertEquals($referenceClientConfig, $clientConfig);
     }
 
